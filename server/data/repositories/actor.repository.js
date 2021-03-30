@@ -1,7 +1,7 @@
 import db from '../../utils/db.js';
 import operatorType from '../../utils/enums/operatorType.js';
 
-const cityRepository = {
+const actorRepository = {
   //CREATE
 
   //READ
@@ -12,4 +12,4 @@ const cityRepository = {
 
 };
 
-export default cityRepository;
+export default actorRepository;

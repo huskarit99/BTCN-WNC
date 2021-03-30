@@ -1,6 +1,5 @@
 export default {
   "required": [
-    "film_id",
     "title",
     "description",
     "release_year",
@@ -11,19 +10,8 @@ export default {
     "length",
     "replacement_cost",
     "rating",
-    "special_features",
-    "last_update"
+    "special_features"
   ],
-  "additionalProperties": false,
   "properties": {
-    "title": {
-      "type": "string"
-    },
-    "language_id": {
-      "type": "integer"
-    },
-    "release_year": {
-      "type": "integer"
-    }
   }
 };

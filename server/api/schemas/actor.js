@@ -1,6 +1,7 @@
 export default {
   "required": [
-    "name"
+    "first_name",
+    "last_name"
   ],
   "properties": {
   }

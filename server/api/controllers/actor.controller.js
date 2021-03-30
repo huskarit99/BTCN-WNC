@@ -1,16 +1,15 @@
 import { Router } from 'express';
 
-import citySchema from '../schemas/city.js';
+import actorSchema from '../schemas/actor.js';
 import validateMDW from '../middlewares/validate.mdw.js';
 import operatorType from '../../utils/enums/operatorType.js';
 import httpStatusCode from '../../utils/enums/httpStatusCode.js';
-import cityService from '../../bussiness/services/city.service.js';
+import actorService from '../../bussiness/services/actor.service.js';
 
 const router = Router();
 
-router.get('/get-cities', async (req, res) => {
-  console.log(cityService);
-  const list = await cityService.getCities();
+router.get('/get-actors', async (req, res) => {
+  const list = await actorService.getActors();
   if (list === operatorType.FAIL.READ) {
     res.status(httpStatusCode.CLIENT_ERRORS.BAD_REQUEST)
       .json({
@@ -21,34 +20,34 @@ router.get('/get-cities', async (req, res) => {
   res.status(httpStatusCode.SUCCESS.OK).json(list);
 })
 
-router.get('/get-city/:id', async (req, res) => {
+router.get('/get-actor/:id', async (req, res) => {
   const id = req.params.id || 0;
-  const city = await cityService.getCityById(id);
-  if (city === operatorType.FAIL.READ) {
+  const actor = await actorService.getActorById(id);
+  if (actor === operatorType.FAIL.READ) {
     res.status(httpStatusCode.CLIENT_ERRORS.BAD_REQUEST)
       .json({
         message: "Reading from DB went wrong !!"
       })
       .end();
   }
-  res.status(httpStatusCode.SUCCESS.OK).json(city);
+  res.status(httpStatusCode.SUCCESS.OK).json(actor);
 })
 
-router.post('/add-city', validateMDW(citySchema), async (req, res) => {
-  const city = req.body;
-  if (await cityService.addCity(city) === operatorType.FAIL.CREATE) {
+router.post('/add-actor', validateMDW(actorSchema), async (req, res) => {
+  const actor = req.body;
+  if (await actorService.addActor(actor) === operatorType.FAIL.CREATE) {
     res.status(httpStatusCode.CLIENT_ERRORS.BAD_REQUEST)
       .json({
         message: "Creating from DB went wrong !!"
       })
       .end();
   }
-  res.status(httpStatusCode.SUCCESS.CREATED).json(city);
+  res.status(httpStatusCode.SUCCESS.CREATED).json(actor);
 })
 
-router.put('/update-city', validateMDW(citySchema), async (req, res) => {
-  const city = req.body;
-  const ret = await cityService.updateCity(city);
+router.put('/update-actor', validateMDW(actorSchema), async (req, res) => {
+  const actor = req.body;
+  const ret = await actorService.updateActor(actor);
   if (ret === operatorType.FAIL.UPDATE) {
     res.status(httpStatusCode.CLIENT_ERRORS.BAD_REQUEST)
       .json({
@@ -59,20 +58,20 @@ router.put('/update-city', validateMDW(citySchema), async (req, res) => {
   else if (ret === operatorType.NOT_AVAILABLE) {
     res.status(httpStatusCode.CLIENT_ERRORS.BAD_REQUEST)
       .json({
-        message: "This city is not available !!"
+        message: "This actor is not available !!"
       })
       .end();
   }
-  res.status(httpStatusCode.SUCCESS.CREATED).json(city);
+  res.status(httpStatusCode.SUCCESS.CREATED).json(actor);
 })
 
-router.delete('/delete-city/:id', async (req, res) => {
+router.delete('/delete-actor/:id', async (req, res) => {
   const id = req.params.id || 0;
-  const ret = await cityService.deleteCity(id);
+  const ret = await actorService.deleteActor(id);
   if (ret === operatorType.NOT_AVAILABLE) {
     res.status(httpStatusCode.CLIENT_ERRORS.BAD_REQUEST)
       .json({
-        message: "This City is not available !!"
+        message: "This Actor is not available !!"
       })
       .end();
   }

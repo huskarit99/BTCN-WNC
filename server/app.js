@@ -1,32 +1,45 @@
 import morgan from 'morgan';
 import express from 'express';
 
+import httpStatusCode from './utils/enums/httpStatusCode.js';
+import citycontroller from './api/controllers/city.controller.js';
 import filmController from './api/controllers/film.controller.js';
+import actorController from './api/controllers/actor.controller.js';
+import countryController from './api/controllers/country.controller.js';
+import categoryController from './api/controllers/category.controller.js';
 
 const app = express();
+const PORT = 3000 || process.env.PORT;
 
 app.use(express.json());
 app.use(morgan('dev'));
 
 app.get('/', (req, res) => {
   res.json({
-    message: 'Hello from Sakila API'
+    message: 'Server is running ....'
   });
 })
 
-app.use((err, req, res, next) => {
-  console.log("haha");
-  console.log(err);
-  if (err) {
-    res.send("Endpoint not found !!!").end();
-  } else {
-    next();
-  }
-})
+app.use('/api/city-controller', citycontroller)
+app.use('/api/film-controller', filmController)
+app.use('/api/actor-controller', actorController)
+app.use('/api/country-controller', countryController)
+app.use('/api/category-controller', categoryController)
 
-app.use('/api/film-controller', filmController);
+app.use((req, res, next) => {
+  const error = new Error("Not found");
+  error.status = httpStatusCode.CLIENT_ERRORS.BAD_REQUEST;
+  next(error);
+});
+app.use((error, req, res, next) => {
+  res.status(error.status || httpStatusCode.SERVER_ERRORS.INTERNAL_SERVER_ERROR).send({
+    error: {
+      status: error.status || httpStatusCode.SERVER_ERRORS.INTERNAL_SERVER_ERROR,
+      message: error.message || "Internal Server Error",
+    },
+  });
+});
 
-const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`Sakila api is running at http://localhost:${PORT}`);
+  console.log(`Server is running at http://localhost:${PORT}`);
 })
