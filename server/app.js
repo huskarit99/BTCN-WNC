@@ -1,5 +1,6 @@
 import morgan from 'morgan';
 import express from 'express';
+import cors from 'cors';
 
 import httpStatusCode from './utils/enums/httpStatusCode.js';
 import citycontroller from './api/controllers/city.controller.js';
@@ -8,16 +9,21 @@ import actorController from './api/controllers/actor.controller.js';
 import countryController from './api/controllers/country.controller.js';
 import categoryController from './api/controllers/category.controller.js';
 
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 const app = express();
 const PORT = 3000 || process.env.PORT;
+app.use(express.static('public'));
 
-app.use(express.json());
+app.use(cors());
 app.use(morgan('dev'));
+app.use(express.json());
+app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-  res.json({
-    message: 'Server is running ....'
-  });
+  res.sendFile(__dirname + '/views/list-actor.html');
 })
 
 app.use('/api/city-controller', citycontroller)
@@ -25,6 +31,7 @@ app.use('/api/film-controller', filmController)
 app.use('/api/actor-controller', actorController)
 app.use('/api/country-controller', countryController)
 app.use('/api/category-controller', categoryController)
+
 
 app.use((req, res, next) => {
   const error = new Error("Not found");

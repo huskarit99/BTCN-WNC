@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "ajv": "^7.2.3",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "knex": "^0.95.2",
     "morgan": "^1.10.0",
