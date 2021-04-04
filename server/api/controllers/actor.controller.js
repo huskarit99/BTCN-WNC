@@ -68,7 +68,7 @@ router.put('/update-actor', validateMDW(actorSchema), async (req, res) => {
 router.delete('/delete-actor/:id', async (req, res) => {
   const id = req.params.id || 0;
   const ret = await actorService.deleteActor(id);
-  if (ret === operatorType.NOT_AVAILABLE) {
+  if (id === 0 || ret === operatorType.NOT_AVAILABLE) {
     res.status(httpStatusCode.CLIENT_ERRORS.BAD_REQUEST)
       .json({
         message: "This Actor is not available !!"
