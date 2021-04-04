@@ -9,7 +9,6 @@ import cityService from '../../bussiness/services/city.service.js';
 const router = Router();
 
 router.get('/get-cities', async (req, res) => {
-  console.log(cityService);
   const list = await cityService.getCities();
   if (list === operatorType.FAIL.READ) {
     res.status(httpStatusCode.CLIENT_ERRORS.BAD_REQUEST)
