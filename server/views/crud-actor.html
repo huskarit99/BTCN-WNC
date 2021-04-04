@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-  <title>Dashboard</title>
+  <title>Dashboard Actor</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -17,26 +17,43 @@
 </head>
 
 <body>
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-12 col-sm-6 col-md-6">
-        <h3 class="text-dark mb-4">Ludens</h3>
-      </div>
-      <div class="col-12 col-sm-6 col-md-6 text-right" style="margin-bottom: 30px;"><a class="btn btn-primary"
-          role="button"><i class="fa fa-plus"></i>&nbsp;Agregar colaborador</a></div>
+  <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+    <div style="width: 100%; display: flex; justify-content: center;">
+      <ul class="navbar-nav" style="width: 24%">
+        <li class=" nav-item" style="width: 9vw;">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item active" style="width: 9vw;">
+          <a class="nav-link" href="/actor">Actor</a>
+        </li>
+        <li class="nav-item" style="width: 9vw;">
+          <a class="nav-link" href="/Category">Category</a>
+        </li>
+      </ul>
     </div>
+  </nav>
+  <div class="container-fluid">
     <div class="card" id="TableSorterCard">
       <div class="card-header py-3">
         <div class="row table-topper align-items-center">
           <div class="col-12 col-sm-5 col-md-6 text-left" style="margin: 0px;padding: 5px 15px;">
-            <p class="text-primary m-0 font-weight-bold">Colaboradores</p>
+            <p class="text-primary m-0 font-weight-bold">Dashboard</p>
           </div>
-          <div class="col-12 col-sm-7 col-md-6 text-right" style="margin: 0px;padding: 5px 15px;"><button
-              class="btn btn-primary btn-sm reset" type="button" style="margin: 2px;">Borrar
-              Filtros</button><button class="btn btn-warning btn-sm" id="zoom_in" type="button"
-              zoomclick="ChangeZoomLevel(-10);" style="margin: 2px;"><i class="fa fa-search-plus"></i></button><button
-              class="btn btn-warning btn-sm" id="zoom_out" type="button" zoomclick="ChangeZoomLevel(-10);"
-              style="margin: 2px;"><i class="fa fa-search-minus"></i></button></div>
+          <div class="col-12 col-sm-7 col-md-6 text-right" style="margin: 0px;padding: 5px 15px;">
+            <a class="btn btn-primary" role="button" style="margin: 2px;" data-toggle="modal" data-target="#add-modal"
+              id="add-button">
+              <i class="fa fa-plus"></i>
+              Add Actor
+            </a>
+            <button class="btn btn-warning btn-sm" id="zoom_in" type="button" zoomclick="ChangeZoomLevel(-10);"
+              style="margin: 2px;">
+              <i class="fa fa-search-plus"></i>
+            </button>
+            <button class="btn btn-warning btn-sm" id="zoom_out" type="button" zoomclick="ChangeZoomLevel(-10);"
+              style="margin: 2px;">
+              <i class="fa fa-search-minus"></i>
+            </button>
+          </div>
         </div>
       </div>
       <div class="row">
@@ -72,6 +89,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
   <script src="../assets/js/Table-with-search--sort-filters.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
   <script>
     $.ajax({
       url: 'http://localhost:3000/api/actor-controller/get-actors',
@@ -105,6 +124,13 @@
           $('#list-actor').append(tr);
           index += 1;
 
+          $('#add-button-' + actor.actor_id).click((row) => {
+            $('#add-modal-actor-id').html(data[row.currentTarget.name].actor_id);
+            $('#add-modal-first-name').html(data[row.currentTarget.name].first_name);
+            $('#add-modal-last-name').html(data[row.currentTarget.name].last_name);
+            $('#add-modal-last-update').html(data[row.currentTarget.name].last_update);
+          })
+
           $('#detail-button-' + actor.actor_id).click((row) => {
             $('#detail-modal-actor-id').html(data[row.currentTarget.name].actor_id);
             $('#detail-modal-first-name').html(data[row.currentTarget.name].first_name);
@@ -120,30 +146,104 @@
           })
         }
 
+        $('#btn-save-add').click(() => {
+          const dataToPost = {
+            first_name: $('#add-modal-first-name').val(),
+            last_name: $('#add-modal-last-name').val()
+          };
+          const jsonToPost = JSON.stringify(dataToPost);
+          $.ajax({
+            url: 'http://localhost:3000/api/actor-controller/add-actor',
+            data: jsonToPost,
+            dataType: 'json',
+            type: 'POST',
+            contentType: 'application/json',
+            success: (data) => {
+              Swal.fire(
+                'Good job!',
+                'Update successfully !!!',
+                'success'
+              ).then(() => {
+                location.reload();
+              })
+            },
+            error: () => {
+              Swal.fire(
+                'Something went wrong!',
+                'Add failed !!!',
+                'error'
+              )
+            }
+          })
+        })
+
         $('#btn-save-edit').click(() => {
           const dataToPost = {
             actor_id: $('#edit-modal-actor-id').html(),
-            first_name: $('#edit-modal-first-name').attr('placeholder'),
-            last_name: $('#edit-modal-last-name').attr('placeholder')
+            first_name: $('#edit-modal-first-name').val() || $('#edit-modal-first-name').attr('placeholder'),
+            last_name: $('#edit-modal-last-name').val() || $('#edit-modal-last-name').attr('placeholder')
           };
-
           const jsonToPost = JSON.stringify(dataToPost);
-
           $.ajax({
             url: 'http://localhost:3000/api/actor-controller/update-actor',
             data: jsonToPost,
             dataType: 'json',
             type: 'PUT',
-            contentType: 'application/json'
+            contentType: 'application/json',
+            success: (data) => {
+              Swal.fire(
+                'Good job!',
+                'Update successfully !!!',
+                'success'
+              ).then(() => {
+                location.reload();
+              })
+            },
+            error: () => {
+              Swal.fire(
+                'Something went wrong!',
+                'Update failed !!!',
+                'error'
+              )
+            }
           })
-            .done((data) => {
-              console.log(data);
-            });
         })
       })
   </script>
 
   <!-- Add Actor -->
+  <div class="modal fade" id="add-modal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" style="float: left; margin-top: 10px;">Add Actor</h4>
+          <button type="button" style="float: right; margin-top: 0px;" class="close"
+            data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div className="form-group">
+            <div className="form-control">
+              <p type="text" style="width:30%; font-weight:bold; display: inline-block;">First Name: </p>
+              <input type="text" id="add-modal-first-name" style="display: inline-block; width: 50%;" />
+            </div>
+          </div>
+          <div className="form-group">
+            <div className="form-control">
+              <p type="text" style="width:30%; font-weight:bold; display: inline-block;">Last Name: </p>
+              <input type="text" id="add-modal-last-name" style="display: inline-block; width: 50%;" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="btn-save-add" data-dismiss="modal">Save Changes</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--  -->
+
+  <!-- Detail Actor -->
   <div class="modal fade" id="detail-modal" role="dialog">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -219,7 +319,8 @@
           <div className="form-group">
             <div className="form-control">
               <p type="text" style="width:30%; font-weight:bold; display: inline-block;">Last Update: </p>
-              <p type="text" id="edit-modal-last-update" style="display: inline-block; width: 50%;" placeholder=""></p>
+              <p type="text" id="edit-modal-last-update" style="display: inline-block; width: 50%;" placeholder="">
+              </p>
             </div>
           </div>
         </div>

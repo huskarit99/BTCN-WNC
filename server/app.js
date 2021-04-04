@@ -23,7 +23,13 @@ app.use(express.json());
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/views/home.html');
+})
+app.get('/actor', (req, res) => {
   res.sendFile(__dirname + '/views/crud-actor.html');
+})
+app.get('/category', (req, res) => {
+  res.sendFile(__dirname + '/views/crud-category.html');
 })
 
 app.use('/api/city-controller', citycontroller)
